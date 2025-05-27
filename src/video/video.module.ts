@@ -6,18 +6,20 @@ import { rabbitMQConfig } from 'src/settings/dotenv-options';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'RABBITMQ_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: [rabbitMQConfig.url],
-          queue: 'video.queue',
-          exchange: 'video_exchange',
-          queueOptions: {
-            durable: false,
+        useFactory: () => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [rabbitMQConfig.url],
+            queue: 'video.processing.queue',
+            exchange: 'video_exchange',
+            queueOptions: {
+              durable: true,
+            },
           },
-        },
+        }),
       },
     ]),
   ],
