@@ -2,28 +2,22 @@ import { Module } from '@nestjs/common';
 import { VideoController } from './video.controller';
 import { VideoService } from './video.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { rabbitMQConfig } from 'src/settings/dotenv-options';
 
 @Module({
   imports: [
-    ConfigModule,
-    ClientsModule.registerAsync([
+    ClientsModule.register([
       {
         name: 'RABBITMQ_SERVICE',
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
-          options: {
-            urls: [configService.get<string>('RABBITMQ_URL')],
-            queue:
-              configService.get<string>('RABBITMQ_QUEUE_NAME') || 'video.queue',
-            exchange: 'video_exchange',
-            queueOptions: {
-              durable: false,
-            },
+        transport: Transport.RMQ,
+        options: {
+          urls: [rabbitMQConfig.url],
+          queue: 'video.queue',
+          exchange: 'video_exchange',
+          queueOptions: {
+            durable: false,
           },
-        }),
+        },
       },
     ]),
   ],

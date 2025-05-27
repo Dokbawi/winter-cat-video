@@ -9,5 +9,6 @@ export class VideoController {
   @Post()
   async processVideo(@Body() videoUploadDto: VideoUploadDto) {
     const result = await this.videoService.processVideo(videoUploadDto);
+    return result;
   }
 }
