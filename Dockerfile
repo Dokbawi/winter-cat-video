@@ -3,11 +3,10 @@ FROM node:18-slim
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --force
 
 COPY . .
 
 RUN npm run build
 
-
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod"]  
