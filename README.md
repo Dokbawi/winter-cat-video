@@ -1,98 +1,66 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Winter Cat Video API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Discord 봇과 영상 처리 백엔드 서비스 간의 중간 API 서버입니다. NestJS 기반으로 구축되어 RabbitMQ를 통한 비동기 영상 처리와 MongoDB를 통한 통계 데이터 관리를 제공합니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🏗️ 아키텍처
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```
+Discord Bot → Winter Cat Video API → Codex Media (영상 처리)
+                     ↓
+                 MongoDB
 ```
 
-## Compile and run the project
+## 🚀 주요 기능
+
+- **영상 처리 요청**: Discord 봇으로부터 영상 처리 요청을 받아 백엔드 서비스로 전달
+- **RabbitMQ 메시징**: 비동기 영상 처리를 위한 메시지 큐 관리
+- **Discord OAuth 인증**: Discord 서버 멤버십 기반 접근 제어
+- **통계 데이터 API**: 서버별 영상 처리 통계 및 분석 데이터 제공
+- **MongoDB**: 영상 처리 이력 및 데이터 관리
+
+## 🛠️ 기술 스택
+
+- **Framework**: NestJS
+- **Database**: MongoDB with Mongoose
+- **Message Queue**: RabbitMQ
+- **Authentication**: Discord OAuth2
+- **Deployment**: Docker + Google Cloud Build
+- **Language**: TypeScript
+
+## ⚙️ 환경 설정
+
+### 환경 변수
 
 ```bash
-# development
-$ npm run start
+NODE_ENV=development
 
-# watch mode
-$ npm run start:dev
+MONGODB_URI=mongodb://localhost:27017/winter-cat-video
 
-# production mode
-$ npm run start:prod
+RABBITMQ_URL=amqp://localhost:5672
+RABBITMQ_QUEUE=video_processing
+
 ```
 
-## Run tests
+## 🔐 인증 및 보안
 
-```bash
-# unit tests
-$ npm run test
+### Discord OAuth 가드
 
-# e2e tests
-$ npm run test:e2e
+`DiscordServerGuard`를 통해 다음을 검증합니다:
 
-# test coverage
-$ npm run test:cov
-```
+- Discord OAuth2 액세스 토큰 유효성
+- 사용자의 특정 Discord 서버 멤버십
+- 요청된 서버 ID에 대한 접근 권한
 
-## Deployment
+## 🔄 데이터 플로우
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1. **요청 수신**: Discord 봇이 `/video` 엔드포인트로 영상 처리 요청
+2. **메시지 발행**: RabbitMQ를 통해 `video.processing` 이벤트 발행
+3. **백엔드 처리**: Codex Media 서비스에서 영상 처리 수행
+4. **결과 저장**: 처리 결과를 MongoDB에 저장
+5. **통계 제공**: `/video/:serverId` 엔드포인트를 통해 통계 데이터 제공
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🔗 관련 프로젝트
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- [Discord Bot](https://github.com/Dokbawi/discord-bot) - Discord 봇 클라이언트
+- [Codex Media](https://github.com/Dokbawi/codex-media) - 영상 처리 백엔드 서비스
+- [Discord helm](https://github.com/Dokbawi/discord-video-helm) - 서비스 k8s 관리 helm chart
